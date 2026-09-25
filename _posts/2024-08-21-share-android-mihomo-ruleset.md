@@ -57,7 +57,7 @@ sniffer:
 tun:
   enable: true
   stack: mips
-  dns-hijack: [any:53]
+  dns-hijack: [any:53, tcp://any:53]
   auto-route: true
   auto-detect-interface: true
   device: mihomo
