@@ -1,0 +1,28 @@
+name: 自动同步上游 DustinWin/dustinwin.github.io 仓库
+on:
+  schedule:
+    - cron: '17 20 * * *' # UTC；北京时间次日 04:17。避开整点可降低高负载时的延迟概率
+  workflow_dispatch:
+concurrency:
+  group: sync-upstream-master
+  cancel-in-progress: true
+permissions:
+  contents: write
+
+jobs:
+  sync-fork:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: 执行同步
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          # --source 填写上游仓库，格式为 OWNER/REPO，不附加分支名
+          # --branch 指定源仓库与目标仓库中要同步的同名分支
+          # --force 会将目标分支硬重置为源分支状态；目标分支的独有提交可能丢失
+          # gh repo sync "${{ github.repository }}" --source "tgymnich/fork-sync" --branch "main" --force
+          gh repo sync "${{ github.repository }}" --source "DustinWin/dustinwin.github.io" --branch "main"
+
+# 权限说明：工作流已按最小权限原则声明 contents: write，通常无需再依赖仓库默认的“读取和写入权限”设置；但组织或企业策略、分支保护规则或规则集仍可能阻止写入或强制更新。工作流文件应保存到仓库的 .github/workflows/ 目录，并使用 .yml 或 .yaml 扩展名。
